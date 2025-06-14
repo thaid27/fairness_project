@@ -6,14 +6,10 @@ import re
 
 # Extract coordinates from Molmo response
 def extract_points(text):
-    pattern = r'<points\s+(.*?)\s*alt='
-    match = re.search(pattern, text)
-    if not match:
-        return []
-    raw_coords = match.group(1)
-    values = re.findall(r'[xy]\d+="([\d.]+)"', raw_coords)
-    coords = list(map(float, values))
-    return list(zip(coords[::2], coords[1::2]))
+    pattern = r'x\d+="([\d.]+)"\s+y\d+="([\d.]+)"'
+    matches = re.findall(pattern, text)
+    points = [(float(x), float(y)) for x, y in matches]
+    return points
 
 
 # Get the point of all object of the scene using Molmo
