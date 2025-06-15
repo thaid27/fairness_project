@@ -6,25 +6,35 @@ def cosine_similarity(a, b):
     return F.cosine_similarity(a, b, dim=-1)
 
 # Get clip and Dino Embedding with 224*224 input images
-
 def get_clip_embedding(image, clip_model, clip_processor):
     inputs = clip_processor(images=image, return_tensors="pt")
+
+    device = next(clip_model.parameters()).device
+    inputs = {k: v.to(device) for k, v in inputs.items()}
+
     with torch.no_grad():
         features = clip_model.get_image_features(**inputs)
+
     return features / features.norm(dim=-1, keepdim=True)
+
 
 def get_dino_embedding(image, dino_model):
     dino_model.eval()
-
     dino_transform = T.Compose([
+        T.Resize((224, 224)),
         T.ToTensor(),
         T.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5])
     ])
-    tensor = dino_transform(image).unsqueeze(0) 
+    tensor = dino_transform(image).unsqueeze(0)
+    device = next(dino_model.parameters()).device
+    tensor = tensor.to(device)
+
     with torch.no_grad():
-        features = dino_model.forward_features(tensor)  
+        features = dino_model.forward_features(tensor)
+
     if features.ndim == 3:
-        features = features[:, 0, :]  
+        features = features[:, 0, :]
+
     return features / features.norm(dim=-1, keepdim=True)
 
 
