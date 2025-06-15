@@ -8,7 +8,6 @@ def generate_masks_sam(predictor, image, input_points):
     predictor.set_image(image)
 
     masks = []
-    mask_points = []
     for point in input_points:
         input_point = np.array([point])
         input_label = np.array([1])  # 1 = "foreground"
@@ -18,9 +17,8 @@ def generate_masks_sam(predictor, image, input_points):
             multimask_output=False,
         )
         masks.append(masks_[0]) 
-        mask_points.append(point)
 
-    return masks, mask_points
+    return masks
 
 def display_mask(masks):
     for i, mask in enumerate(masks):
