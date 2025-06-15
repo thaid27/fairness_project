@@ -29,18 +29,18 @@ def get_dino_embedding(image, dino_model):
 
 
 # Combined similarity score using Dino and Clip embeddings
-def combined_score(c_new_list, c_orig):
+def combined_score(c_new_list, c_orig, clip_model, clip_processor, dino_model):
     N = len(c_new_list)
     
     clip_sims = []
     dino_sims = []
     
-    clip_orig = get_clip_embedding(c_orig)
-    dino_orig = get_dino_embedding(c_orig)
+    clip_orig = get_clip_embedding(c_orig, clip_model, clip_processor)
+    dino_orig = get_dino_embedding(c_orig, dino_model) 
 
     for c_new in c_new_list:
-        clip_feat = get_clip_embedding(c_new)
-        dino_feat = get_dino_embedding(c_new)
+        clip_feat = get_clip_embedding(c_new, clip_model, clip_processor)
+        dino_feat = get_dino_embedding(c_new, dino_model)
 
         clip_sims.append(cosine_similarity(clip_feat, clip_orig))
         dino_sims.append(cosine_similarity(dino_feat, dino_orig))
